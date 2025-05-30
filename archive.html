@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archive - My Media Archive</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <style>
+        /* Add styles for delete functionality */
+        .delete-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #ffb3d1;
+            text-align: center;
+        }
+
+        /* Add styles for archive content */
+        #archive-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        #archive-content h2 {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ffb3d1;
+            color: #000;
+        }
+
+        .media-item {
+            background-color: white;
+            border: 2px solid #ffb3d1;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .media-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .media-title {
+            display: block;
+            font-size: 18px;
+            font-weight: bold;
+            color: #000;
+            margin-bottom: 10px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .media-title:hover {
+            color: #ff66b3;
+        }
+
+        .rating {
+            display: block;
+            margin: 10px 0;
+            color: #ff1493;
+        }
+
+        .review-text {
+            font-style: italic;
+            color: #666;
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+
+        .date, .completion-date {
+            display: inline-block;
+            font-size: 14px;
+            color: #666;
+            margin-right: 15px;
+        }
+
+        .completion-date {
+            color: #ff66b3;
+        }
+
+        .delete-button {
+            background-color: white;
+            border: 2px solid #ff1493;
+            color: #ff1493;
+            padding: 10px 20px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .delete-button:hover {
+            background-color: #ff1493;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .confirmation-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border: 2px solid #000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 2000;
+            text-align: center;
+            min-width: 300px;
+        }
+
+        .confirmation-modal.show {
+            display: block;
+        }
+
+        .confirmation-modal h3 {
+            margin-top: 0;
+            color: #ff1493;
+            margin-bottom: 20px;
+        }
+
+        .confirmation-modal p {
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .confirmation-modal .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .confirmation-modal button {
+            background-color: white;
+            border: 2px solid #000;
+            padding: 8px 20px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            transition: all 0.2s;
+            min-width: 100px;
+        }
+
+        .confirmation-modal .confirm-delete {
+            background-color: #ff1493;
+            color: white;
+            border-color: #ff1493;
+        }
+
+        .confirmation-modal button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1999;
+        }
+
+        .modal-overlay.show {
+            display: block;
+        }
+
+        .nav {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .nav a {
+            color: #000;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 10px;
+            border: 2px solid #000;
+            background-color: white;
+            text-align: center;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        
+        .nav a:hover {
+            background-color: #ff99cc;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            color: #000;
+        }
+        
+        .nav a:active {
+            background-color: #ff66b3;
+            color: #000;
+        }
+        
+        .nav a:visited {
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    <!-- Add modal overlay -->
+    <div class="modal-overlay"></div>
+    <div class="layout">
+        <div class="sidebar">
+            <h2>NAVIGATION</h2>
+            <div class="nav">
+                <a href="archive.html?type=reading">READING</a>
+                <a href="archive.html?type=music">MUSIC</a>
+                <a href="archive.html?type=tv">TV & FILMS</a>
+                <a href="archive.html?type=other">OTHER</a>
+                <a href="index.html">HOME</a>
+            </div>
+        </div>
+
+        <div class="container">
+            <h1>ARCHIVE</h1>
+            <div id="archive-content"></div>
+        </div>
+    </div>
+
+    <!-- Detailed View Modal -->
+    <div id="detailed-view" class="detailed-view hidden">
+        <div class="detailed-view-content">
+            <div class="detailed-view-header">
+                <h2 id="detailed-title"></h2>
+                <div class="header-buttons">
+                    <button class="save-button" onclick="saveDetailedView()">Save Changes</button>
+                    <button class="close-button" onclick="closeDetailedView()">Close</button>
+                </div>
+            </div>
+
+            <div class="review-section">
+                <h3>
+                    Review
+                    <button class="edit-button" onclick="toggleReviewEdit()" style="display: none;">Edit Review</button>
+                </h3>
+                <div id="detailed-review" class="review-text"></div>
+                <div class="review-editor-container">
+                    <div class="rating-editor">
+                        <label>Rating: </label>
+                        <select id="rating-editor">
+                            <option value="1">⭐</option>
+                            <option value="2">⭐⭐</option>
+                            <option value="3">⭐⭐⭐</option>
+                            <option value="4">⭐⭐⭐⭐</option>
+                            <option value="5">⭐⭐⭐⭐⭐</option>
+                        </select>
+                    </div>
+                    <textarea id="review-editor" class="review-editor" placeholder="Update your review..."></textarea>
+                    <div class="review-actions">
+                        <button class="save-review" onclick="saveReviewEdit()">Save Changes</button>
+                        <button onclick="cancelReviewEdit()">Cancel</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="notes-section">
+                <h3>Notes & Quotes</h3>
+                <textarea id="notes-editor" placeholder="Add your notes, quotes, and additional thoughts here..."></textarea>
+            </div>
+
+            <div class="images-section">
+                <h3>Images</h3>
+                <div class="file-upload">
+                    <label for="detail-image-upload">
+                        Choose Image
+                        <input type="file" id="detail-image-upload" accept="image/*" onchange="handleDetailImageUpload(event)">
+                    </label>
+                </div>
+                <div id="detail-image-preview"></div>
+            </div>
+
+            <div class="delete-section">
+                <button class="delete-button" onclick="showDeleteConfirmation()">Delete Entry</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add confirmation modal -->
+    <div id="delete-confirmation" class="confirmation-modal">
+        <h3>Delete Entry</h3>
+        <p>Are you sure you want to delete this entry? This action cannot be undone.</p>
+        <div class="buttons">
+            <button class="confirm-delete" onclick="confirmDelete()">Delete</button>
+            <button onclick="cancelDelete()">Cancel</button>
+        </div>
+    </div>
+
+    <script>
+        const supabaseUrl = 'https://rjbggndyjluuyfqsncec.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJqYmdnbmR5amx1dXlmcXNuY2VjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1NjA5NjYsImV4cCI6MjA2NDEzNjk2Nn0.Hz251lsJhiTcol9128reuruw4chbgNSuYIMRrHy-0iA';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        let isLoggedIn = false;
+
+        // Check session on page load
+        async function checkSession() {
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                if (session) {
+                    isLoggedIn = true;
+                }
+            } catch (error) {
+                console.error('Session check failed:', error);
+            }
+        }
+
+        async function loadArchive() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const type = urlParams.get('type');
+            
+            if (!type) {
+                document.getElementById('archive-content').innerHTML = '<p>Please select a category from the navigation.</p>';
+                return;
+            }
+
+            try {
+                const { data: items, error } = await supabase
+                    .from('media')
+                    .select('*')
+                    .eq('type', type)
+                    .order('date', { ascending: false });
+
+                if (error) throw error;
+
+                const archiveContent = document.getElementById('archive-content');
+                archiveContent.innerHTML = `<h2>${type.toUpperCase()}</h2>`;
+
+                if (!items || items.length === 0) {
+                    archiveContent.innerHTML += '<p>No entries yet.</p>';
+                    return;
+                }
+
+                const listElement = document.createElement('div');
+                listElement.id = type + '-list';
+                
+                items.forEach(item => {
+                    const mediaDiv = document.createElement('div');
+                    mediaDiv.className = 'media-item';
+                    mediaDiv.setAttribute('data-id', item.id);
+                    
+                    mediaDiv.innerHTML = `
+                        <a class="media-title" onclick="openDetailedView(${item.id})">${item.title}${item.creator ? ` - ${item.creator}` : ''}</a>
+                        <span class="rating">${'⭐'.repeat(item.rating || 0)}</span>
+                        <div class="review-text">${item.review || ''}</div>
+                        <span class="date">Added: ${item.date}</span>
+                        ${item.completed ? `<span class="completion-date">Completed: ${item.completion_date}</span>` : ''}
+                    `;
+                    
+                    listElement.appendChild(mediaDiv);
+                });
+
+                archiveContent.appendChild(listElement);
+            } catch (error) {
+                console.error('Failed to load archive:', error);
+                document.getElementById('archive-content').innerHTML = '<p>Error loading archive content.</p>';
+            }
+        }
+
+        // Detailed view functions
+        let itemToDelete = null;
+
+        function showDeleteConfirmation() {
+            document.getElementById('delete-confirmation').classList.add('show');
+            document.querySelector('.modal-overlay').classList.add('show');
+        }
+
+        function cancelDelete() {
+            document.getElementById('delete-confirmation').classList.remove('show');
+            document.querySelector('.modal-overlay').classList.remove('show');
+        }
+
+        async function confirmDelete() {
+            if (!itemToDelete) return;
+            
+            try {
+                // First, delete any associated images
+                const { data: mediaItem } = await supabase
+                    .from('media')
+                    .select('image_path')
+                    .eq('id', itemToDelete)
+                    .single();
+
+                if (mediaItem?.image_path) {
+                    await supabase.storage
+                        .from('media-images')
+                        .remove([mediaItem.image_path]);
+                }
+
+                // Then delete the media entry
+                const { error } = await supabase
+                    .from('media')
+                    .delete()
+                    .eq('id', itemToDelete);
+
+                if (error) throw error;
+
+                // Close both the confirmation modal and the detailed view
+                cancelDelete();
+                closeDetailedView();
+                
+                // Refresh the display
+                await loadArchive();
+                
+                // Show success message
+                alert('Entry deleted successfully!');
+            } catch (error) {
+                alert('Failed to delete entry: ' + error.message);
+            }
+        }
+
+        async function openDetailedView(id) {
+            try {
+                const { data: entry, error } = await supabase
+                    .from('media')
+                    .select('*')
+                    .eq('id', id)
+                    .single();
+
+                if (error) throw error;
+                if (!entry) return;
+                
+                // Store the current item ID for deletion
+                itemToDelete = id;
+                
+                document.getElementById('detailed-title').textContent = `${entry.title}${entry.creator ? ` - ${entry.creator}` : ''}`;
+                document.getElementById('detailed-review').innerHTML = `
+                    <div class="review-content">${entry.review || ''}</div>
+                    <div class="rating">${'⭐'.repeat(entry.rating || 0)}</div>
+                    <div class="date">Added: ${entry.date}</div>
+                    ${entry.completed ? `<span class="completion-date">Completed: ${entry.completion_date}</span>` : ''}
+                `;
+                
+                document.getElementById('notes-editor').value = entry.notes || '';
+                
+                const imagePreview = document.getElementById('detail-image-preview');
+                imagePreview.innerHTML = '';
+                if (entry.image_path) {
+                    const imgUrl = supabase.storage
+                        .from('media-images')
+                        .getPublicUrl(entry.image_path)
+                        .data.publicUrl;
+                    const imgElement = document.createElement('img');
+                    imgElement.src = imgUrl;
+                    imgElement.className = 'image-preview';
+                    imagePreview.appendChild(imgElement);
+                }
+                
+                // Show/hide delete button based on login status
+                const deleteSection = document.querySelector('.delete-section');
+                if (deleteSection) {
+                    deleteSection.style.display = isLoggedIn ? 'block' : 'none';
+                }
+                
+                document.getElementById('detailed-view').classList.remove('hidden');
+            } catch (error) {
+                console.error('Failed to open detailed view:', error);
+            }
+        }
+
+        function closeDetailedView() {
+            document.getElementById('detailed-view').classList.add('hidden');
+            itemToDelete = null; // Reset the item to delete when closing
+        }
+
+        async function saveDetailedView() {
+            const id = parseInt(document.querySelector('[data-id]').getAttribute('data-id'));
+            try {
+                const { data: updatedEntry, error } = await supabase
+                    .from('media')
+                    .update({
+                        notes: document.getElementById('notes-editor').value
+                    })
+                    .eq('id', id)
+                    .select('*')
+                    .single();
+
+                if (error) throw error;
+
+                alert('Changes saved successfully!');
+                loadArchive();
+            } catch (error) {
+                alert('Failed to save changes: ' + error.message);
+            }
+        }
+
+        // Add review editing functions
+        function toggleReviewEdit() {
+            const reviewContent = document.getElementById('detailed-review');
+            const reviewEditor = document.getElementById('review-editor');
+            const ratingEditor = document.querySelector('.rating-editor');
+            const reviewActions = document.querySelector('.review-actions');
+            
+            // Get current review content and rating
+            const currentReview = reviewContent.querySelector('.review-content').textContent;
+            const currentRating = reviewContent.querySelector('.rating').textContent.length; // Count stars
+            
+            // Set current values in editors
+            reviewEditor.value = currentReview;
+            document.getElementById('rating-editor').value = currentRating;
+            
+            // Show editors
+            reviewContent.style.display = 'none';
+            reviewEditor.style.display = 'block';
+            ratingEditor.classList.add('show');
+            reviewActions.classList.add('show');
+        }
+
+        function cancelReviewEdit() {
+            const reviewContent = document.getElementById('detailed-review');
+            const reviewEditor = document.getElementById('review-editor');
+            const ratingEditor = document.querySelector('.rating-editor');
+            const reviewActions = document.querySelector('.review-actions');
+            
+            // Hide editors and show content
+            reviewContent.style.display = 'block';
+            reviewEditor.style.display = 'none';
+            ratingEditor.classList.remove('show');
+            reviewActions.classList.remove('show');
+        }
+
+        async function saveReviewEdit() {
+            const id = parseInt(document.querySelector('[data-id]').getAttribute('data-id'));
+            const newReview = document.getElementById('review-editor').value;
+            const newRating = parseInt(document.getElementById('rating-editor').value);
+            
+            try {
+                const { data: updatedEntry, error } = await supabase
+                    .from('media')
+                    .update({
+                        review: newReview,
+                        rating: newRating
+                    })
+                    .eq('id', id)
+                    .select('*')
+                    .single();
+
+                if (error) throw error;
+
+                // Update the display
+                const reviewContent = document.getElementById('detailed-review');
+                reviewContent.innerHTML = `
+                    <div class="review-content">${newReview}</div>
+                    <div class="rating">${'⭐'.repeat(newRating)}</div>
+                    <div class="date">Added: ${updatedEntry.date}</div>
+                    ${updatedEntry.completed ? '<span class="completed-badge">Completed</span>' : ''}
+                `;
+
+                // Hide editors
+                cancelReviewEdit();
+                
+                // Refresh the list to show updated content
+                await loadArchive();
+                
+            } catch (error) {
+                alert('Failed to save review changes: ' + error.message);
+            }
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', async () => {
+            await checkSession();
+            await loadArchive();
+        });
+
+        // Make functions available globally
+        window.openDetailedView = openDetailedView;
+        window.closeDetailedView = closeDetailedView;
+        window.saveDetailedView = saveDetailedView;
+        window.toggleReviewEdit = toggleReviewEdit;
+        window.cancelReviewEdit = cancelReviewEdit;
+        window.saveReviewEdit = saveReviewEdit;
+    </script>
+</body>
+</html> 
