@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Archive - My Media Archive</title>
+    <title>Archive - Aishu's Archive</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
     <style>
@@ -209,6 +209,54 @@
         .nav a:visited {
             color: #000;
         }
+
+        .notes-section {
+            background-color: white;
+            padding: 20px;
+            margin: 20px 0;
+            border: 2px solid #ffb3d1;
+        }
+
+        .notes-section h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: #000;
+            font-size: 18px;
+            letter-spacing: 1px;
+        }
+
+        .notes-section #notes-content {
+            margin-bottom: 15px;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            padding: 10px;
+        }
+
+        .notes-section blockquote {
+            border-left: 3px solid #ffb3d1;
+            margin: 10px 0;
+            padding-left: 15px;
+            font-style: italic;
+        }
+
+        /* Add admin control styles */
+        .admin-only {
+            display: none !important;
+        }
+
+        .is-admin .admin-only {
+            display: block !important;
+        }
+
+        /* Add this to your existing styles */
+        .viewer-only {
+            display: block;
+        }
+
+        .is-admin .viewer-only {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
@@ -238,18 +286,18 @@
             <div class="detailed-view-header">
                 <h2 id="detailed-title"></h2>
                 <div class="header-buttons">
-                    <button class="save-button" onclick="saveDetailedView()">Save Changes</button>
-                    <button class="close-button" onclick="closeDetailedView()">Close</button>
+                    <button class="save-button admin-only" onclick="saveDetailedView()">Save Changes</button>
+                    <button class="close-button viewer-only" onclick="closeDetailedView()">Close</button>
                 </div>
             </div>
 
             <div class="review-section">
                 <h3>
                     Review
-                    <button class="edit-button" onclick="toggleReviewEdit()" style="display: none;">Edit Review</button>
+                    <button class="edit-button admin-only" onclick="toggleReviewEdit()">Edit Review</button>
                 </h3>
                 <div id="detailed-review" class="review-text"></div>
-                <div class="review-editor-container">
+                <div class="review-editor-container admin-only" style="display: none;">
                     <div class="rating-editor">
                         <label>Rating: </label>
                         <select id="rating-editor">
@@ -262,15 +310,28 @@
                     </div>
                     <textarea id="review-editor" class="review-editor" placeholder="Update your review..."></textarea>
                     <div class="review-actions">
-                        <button class="save-review" onclick="saveReviewEdit()">Save Changes</button>
+                        <button class="save-review" onclick="saveReviewEdit()">Save Review</button>
                         <button onclick="cancelReviewEdit()">Cancel</button>
                     </div>
                 </div>
             </div>
 
+            <div class="completion-section admin-only">
+                <div class="completion-status">
+                    <input type="checkbox" id="completion-status" onchange="toggleCompletionStatus()">
+                    <label for="completion-status">Completed</label>
+                    <input type="date" id="completion-date" style="display: none;">
+                </div>
+            </div>
+
             <div class="notes-section">
                 <h3>Notes & Quotes</h3>
-                <textarea id="notes-editor" placeholder="Add your notes, quotes, and additional thoughts here..."></textarea>
+                <div class="notes-privacy" style="margin-bottom: 15px; display: none;">
+                    <input type="checkbox" id="private-notes" name="private-notes">
+                    <label for="private-notes">Keep these notes private</label>
+                </div>
+                <div id="notes-content"></div>
+                <textarea id="notes-editor" placeholder="Add your notes, quotes, and additional thoughts here..." style="display: none;"></textarea>
             </div>
 
             <div class="images-section">
@@ -329,11 +390,18 @@
             }
 
             try {
-                const { data: items, error } = await supabase
+                let query = supabase
                     .from('media')
                     .select('*')
                     .eq('type', type)
                     .order('date', { ascending: false });
+
+                if (!isLoggedIn) {
+                    // For non-admin users, only show non-private entries
+                    query = query.eq('private_notes', false);
+                }
+
+                const { data: items, error } = await query;
 
                 if (error) throw error;
 
@@ -437,6 +505,15 @@
                 // Store the current item ID for deletion
                 itemToDelete = id;
                 
+                const detailedView = document.getElementById('detailed-view');
+                
+                // Add or remove admin class based on login status
+                if (isLoggedIn) {
+                    detailedView.classList.add('is-admin');
+                } else {
+                    detailedView.classList.remove('is-admin');
+                }
+
                 document.getElementById('detailed-title').textContent = `${entry.title}${entry.creator ? ` - ${entry.creator}` : ''}`;
                 document.getElementById('detailed-review').innerHTML = `
                     <div class="review-content">${entry.review || ''}</div>
@@ -445,7 +522,32 @@
                     ${entry.completed ? `<span class="completion-date">Completed: ${entry.completion_date}</span>` : ''}
                 `;
                 
-                document.getElementById('notes-editor').value = entry.notes || '';
+                // Handle notes visibility and editing
+                const notesContent = document.getElementById('notes-content');
+                const notesEditor = document.getElementById('notes-editor');
+                const notesPrivacy = document.querySelector('.notes-privacy');
+                const reviewEditor = document.querySelector('.review-editor-container');
+                
+                if (isLoggedIn) {
+                    // Admin view
+                    notesEditor.value = entry.notes || '';
+                    notesEditor.style.display = 'block';
+                    notesContent.style.display = 'none';
+                    notesPrivacy.style.display = 'block';
+                    document.getElementById('private-notes').checked = entry.private_notes || false;
+                    reviewEditor.style.display = 'block';
+                } else {
+                    // Public view
+                    notesEditor.style.display = 'none';
+                    notesPrivacy.style.display = 'none';
+                    reviewEditor.style.display = 'none';
+                    if (entry.private_notes) {
+                        notesContent.innerHTML = '<em>These notes are private</em>';
+                    } else {
+                        notesContent.innerHTML = entry.notes || '<em>No notes available</em>';
+                    }
+                    notesContent.style.display = 'block';
+                }
                 
                 const imagePreview = document.getElementById('detail-image-preview');
                 imagePreview.innerHTML = '';
@@ -460,10 +562,30 @@
                     imagePreview.appendChild(imgElement);
                 }
                 
-                // Show/hide delete button based on login status
+                // Show/hide admin controls
                 const deleteSection = document.querySelector('.delete-section');
-                if (deleteSection) {
-                    deleteSection.style.display = isLoggedIn ? 'block' : 'none';
+                const editButton = document.querySelector('.edit-button');
+                const saveButton = document.querySelector('.save-button');
+                
+                if (isLoggedIn) {
+                    // Admin view - show all controls
+                    if (deleteSection) deleteSection.style.display = 'block';
+                    if (editButton) editButton.style.display = 'inline-block';
+                    if (saveButton) saveButton.style.display = 'block';
+                } else {
+                    // Public view - hide admin controls but keep close button
+                    if (deleteSection) deleteSection.style.display = 'none';
+                    if (editButton) editButton.style.display = 'none';
+                    if (saveButton) saveButton.style.display = 'none';
+                }
+                
+                // Update completion status
+                const completionCheckbox = document.getElementById('completion-status');
+                const completionDate = document.getElementById('completion-date');
+                if (completionCheckbox && completionDate) {
+                    completionCheckbox.checked = entry.completed || false;
+                    completionDate.value = entry.completion_date || '';
+                    completionDate.style.display = entry.completed ? 'inline-block' : 'none';
                 }
                 
                 document.getElementById('detailed-view').classList.remove('hidden');
@@ -478,12 +600,13 @@
         }
 
         async function saveDetailedView() {
-            const id = parseInt(document.querySelector('[data-id]').getAttribute('data-id'));
+            const id = itemToDelete;
             try {
                 const { data: updatedEntry, error } = await supabase
                     .from('media')
                     .update({
-                        notes: document.getElementById('notes-editor').value
+                        notes: document.getElementById('notes-editor').value,
+                        private_notes: document.getElementById('private-notes').checked
                     })
                     .eq('id', id)
                     .select('*')
@@ -491,8 +614,8 @@
 
                 if (error) throw error;
 
-                alert('Changes saved successfully!');
-                loadArchive();
+                await loadArchive();
+                closeDetailedView(); // Auto-close after saving
             } catch (error) {
                 alert('Failed to save changes: ' + error.message);
             }
@@ -534,7 +657,7 @@
         }
 
         async function saveReviewEdit() {
-            const id = parseInt(document.querySelector('[data-id]').getAttribute('data-id'));
+            const id = itemToDelete;
             const newReview = document.getElementById('review-editor').value;
             const newRating = parseInt(document.getElementById('rating-editor').value);
             
@@ -551,23 +674,49 @@
 
                 if (error) throw error;
 
-                // Update the display
-                const reviewContent = document.getElementById('detailed-review');
-                reviewContent.innerHTML = `
-                    <div class="review-content">${newReview}</div>
-                    <div class="rating">${'⭐'.repeat(newRating)}</div>
-                    <div class="date">Added: ${updatedEntry.date}</div>
-                    ${updatedEntry.completed ? '<span class="completed-badge">Completed</span>' : ''}
-                `;
-
-                // Hide editors
-                cancelReviewEdit();
-                
-                // Refresh the list to show updated content
                 await loadArchive();
-                
+                closeDetailedView(); // Auto-close after saving
             } catch (error) {
                 alert('Failed to save review changes: ' + error.message);
+            }
+        }
+
+        // Add these functions for completion status
+        async function toggleCompletionStatus() {
+            const checkbox = document.getElementById('completion-status');
+            const dateInput = document.getElementById('completion-date');
+            
+            if (checkbox.checked) {
+                dateInput.style.display = 'inline-block';
+                dateInput.value = new Date().toISOString().split('T')[0];
+            } else {
+                dateInput.style.display = 'none';
+                dateInput.value = '';
+            }
+            
+            await saveCompletionStatus();
+        }
+
+        async function saveCompletionStatus() {
+            const id = itemToDelete;
+            const completed = document.getElementById('completion-status').checked;
+            const completionDate = document.getElementById('completion-date').value;
+
+            try {
+                const { error } = await supabase
+                    .from('media')
+                    .update({
+                        completed: completed,
+                        completion_date: completed ? completionDate : null
+                    })
+                    .eq('id', id);
+
+                if (error) throw error;
+                
+                await loadArchive();
+                closeDetailedView(); // Auto-close after saving
+            } catch (error) {
+                alert('Failed to update completion status: ' + error.message);
             }
         }
 

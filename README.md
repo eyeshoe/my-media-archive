@@ -1,6 +1,6 @@
-# My Media Archive
+# Aishu's Archive
 
-A personal media archive website to track books, music, TV shows, films, and pictures. Built with HTML, JavaScript, and Supabase.
+A personal media archive website to track books, music, TV shows, and films. Built with HTML, JavaScript, and Supabase.
 
 ## Setup Instructions
 

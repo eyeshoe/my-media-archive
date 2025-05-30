@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Media Archive</title>
+    <title>Aishu's Archive</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
     <style>
@@ -441,11 +441,63 @@
         }
         
         .email-signup {
-            background-color: #fff;
-            border: 1px solid #000;
-            padding: 15px;
-            margin: 20px 0;
+            background-color: white;
+            border: 2px solid #ffb3d1;
+            padding: 25px;
+            margin: 30px 0;
             text-align: center;
+            border-radius: 8px;
+        }
+        
+        .email-signup h3 {
+            margin-bottom: 15px;
+            color: #333;
+            font-size: 20px;
+        }
+        
+        .email-input-container {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 10px 0;
+        }
+        
+        .email-input-container input[type="email"] {
+            width: 250px;
+            padding: 10px;
+            border: 2px solid #ffb3d1;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .email-input-container button {
+            background-color: #ff1493;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        
+        .email-input-container button:hover {
+            background-color: #ff369b;
+            transform: translateY(-2px);
+        }
+        
+        .subscription-message {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        
+        .subscription-message.success {
+            color: #28a745;
+        }
+        
+        .subscription-message.error {
+            color: #dc3545;
         }
         
         .pictures-section {
@@ -621,15 +673,35 @@
             letter-spacing: 1px;
         }
 
-        .notes-section textarea {
-            width: 100%;
-            min-height: 200px;
-            padding: 15px;
-            margin: 10px 0;
-            border: 2px solid #000;
+        .notes-section .notes-privacy {
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .notes-section .notes-privacy input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .notes-section .notes-privacy label {
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .notes-section #notes-content {
+            margin-bottom: 15px;
+            line-height: 1.8;
+            white-space: pre-wrap;
             font-family: 'Courier New', monospace;
-            line-height: 1.6;
-            background-color: white;
+            padding: 10px;
+        }
+
+        .notes-section blockquote {
+            border-left: 3px solid #ffb3d1;
+            margin: 10px 0;
+            padding-left: 15px;
+            font-style: italic;
         }
 
         .images-section {
@@ -981,6 +1053,22 @@
             transform: translateY(-2px);
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
+
+        .admin-only {
+            display: none !important;
+        }
+
+        .is-admin .admin-only {
+            display: block !important;
+        }
+
+        .viewer-only {
+            display: block;
+        }
+
+        .is-admin .viewer-only {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
@@ -1020,13 +1108,13 @@
     </div>
 
     <div class="container">
-        <h1>MY MEDIA ARCHIVE</h1>
+        <h1>AISHU'S ARCHIVE</h1>
         
         <div class="welcome">
-            <strong>Welcome to my personal media consumption log.</strong><br><br>
-            This is where I document everything I read, watch, listen to, and experience. It's my way of understanding how my tastes evolve and keeping track of what shapes me as a person and artist. Think of it as cultural archaeology - each entry is an artifact of who I was at that moment in time.
+            <strong>Welcome to Aishu's Archive</strong><br><br>
+            Hello sweet friends, welcome to my archive! This is a centralized place for all of media consumption, including reviews, notes, and more.
             <br><br>
-            <em>"We are what we consume, and I want to remember all of it."</em>
+            <em>"And all you touch and all you see Is all your life will ever be" - Pink Floyd</em>
         </div>
 
         <div class="current-favorites">
@@ -1096,11 +1184,14 @@
 
             <!-- Email Signup -->
             <div class="email-signup">
-                <h3>📧 MONTHLY DIGEST</h3>
+                <h3>📧 MONTHLY DIGEST ❤️ ✉️</h3>
                 Want to get a monthly roundup of everything I've consumed? Leave your email:<br><br>
-                <input type="email" id="subscriber-email" placeholder="your@email.com" style="width: 200px;">
-                <button onclick="subscribeEmail()">Subscribe</button><br>
-                <small><em>No spam, just a thoughtful monthly recap of books, music, films, and moments.</em></small>
+                <div class="email-input-container">
+                    <input type="email" id="subscriber-email" placeholder="your@email.com">
+                    <button onclick="subscribeEmail()">Subscribe</button>
+                </div>
+                <small><em>No spam, I promise!</em></small>
+                <div id="subscription-message" class="subscription-message"></div>
             </div>
 
             <!-- Add Modal Overlay -->
@@ -1159,15 +1250,18 @@
                     <div class="detailed-view-header">
                         <h2 id="detailed-title"></h2>
                         <div class="header-buttons">
-                            <button class="save-button" onclick="saveDetailedView()">Save Changes</button>
-                            <button class="close-button" onclick="closeDetailedView()">Close</button>
+                            <button class="save-button admin-only" onclick="saveDetailedView()">Save Changes</button>
+                            <button class="close-button viewer-only" onclick="closeDetailedView()">Close</button>
             </div>
         </div>
 
                     <div class="review-section">
-                        <h3>Review</h3>
+                        <h3>
+                            Review
+                            <button class="edit-button admin-only" onclick="toggleReviewEdit()">Edit Review</button>
+                        </h3>
                         <div id="detailed-review" class="review-text"></div>
-                        <div class="review-editor-container">
+                        <div class="review-editor-container admin-only" style="display: none;">
                             <div class="rating-editor">
                                 <label>Rating: </label>
                                 <select id="rating-editor">
@@ -1177,19 +1271,32 @@
                                     <option value="4">⭐⭐⭐⭐</option>
                                     <option value="5">⭐⭐⭐⭐⭐</option>
                                 </select>
-                </div>
+                            </div>
                             <textarea id="review-editor" class="review-editor" placeholder="Update your review..."></textarea>
                             <div class="review-actions">
-                                <button class="save-review" onclick="saveReviewEdit()">Save Changes</button>
+                                <button class="save-review" onclick="saveReviewEdit()">Save Review</button>
                                 <button onclick="cancelReviewEdit()">Cancel</button>
-                </div>
-            </div>
-        </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="completion-section admin-only">
+                        <div class="completion-status">
+                            <input type="checkbox" id="completion-status" onchange="toggleCompletionStatus()">
+                            <label for="completion-status">Completed</label>
+                            <input type="date" id="completion-date" style="display: none;">
+                        </div>
+                    </div>
 
                     <div class="notes-section">
                         <h3>Notes & Quotes</h3>
-                        <textarea id="notes-editor" placeholder="Add your notes, quotes, and additional thoughts here..."></textarea>
-                </div>
+                        <div class="notes-privacy" style="margin-bottom: 15px; display: none;">
+                            <input type="checkbox" id="private-notes" name="private-notes">
+                            <label for="private-notes">Keep these notes private</label>
+                        </div>
+                        <div id="notes-content"></div>
+                        <textarea id="notes-editor" placeholder="Add your notes, quotes, and additional thoughts here..." style="display: none;"></textarea>
+                    </div>
 
                     <div class="images-section">
                         <h3>Images</h3>
@@ -1267,6 +1374,11 @@
                     .select('*')
                     .eq('type', type)
                     .order('date', { ascending: false });
+                
+                if (!isLoggedIn) {
+                    // For non-admin users, only show non-private entries
+                    query = query.eq('private_notes', false);
+                }
                 
                 if (window.location.pathname === '/index.html' || window.location.pathname === '/') {
                     query = query.limit(1);
@@ -1445,6 +1557,15 @@
                 // Store the current item ID for deletion
                 itemToDelete = id;
                 
+                const detailedView = document.getElementById('detailed-view');
+                
+                // Add or remove admin class based on login status
+                if (isLoggedIn) {
+                    detailedView.classList.add('is-admin');
+                } else {
+                    detailedView.classList.remove('is-admin');
+                }
+
                 document.getElementById('detailed-title').textContent = `${entry.title}${entry.creator ? ` - ${entry.creator}` : ''}`;
                 document.getElementById('detailed-review').innerHTML = `
                     <div class="review-content">${entry.review || ''}</div>
@@ -1453,7 +1574,32 @@
                     ${entry.completed ? `<span class="completion-date">Completed: ${entry.completion_date}</span>` : ''}
                 `;
                 
-                document.getElementById('notes-editor').value = entry.notes || '';
+                // Handle notes visibility and editing
+                const notesContent = document.getElementById('notes-content');
+                const notesEditor = document.getElementById('notes-editor');
+                const notesPrivacy = document.querySelector('.notes-privacy');
+                const reviewEditor = document.querySelector('.review-editor-container');
+                
+                if (isLoggedIn) {
+                    // Admin view
+                    notesEditor.value = entry.notes || '';
+                    notesEditor.style.display = 'block';
+                    notesContent.style.display = 'none';
+                    notesPrivacy.style.display = 'block';
+                    document.getElementById('private-notes').checked = entry.private_notes || false;
+                    reviewEditor.style.display = 'block';
+                } else {
+                    // Public view
+                    notesEditor.style.display = 'none';
+                    notesPrivacy.style.display = 'none';
+                    reviewEditor.style.display = 'none';
+                    if (entry.private_notes) {
+                        notesContent.innerHTML = '<em>These notes are private</em>';
+                    } else {
+                        notesContent.innerHTML = entry.notes || '<em>No notes available</em>';
+                    }
+                    notesContent.style.display = 'block';
+                }
                 
                 const imagePreview = document.getElementById('detail-image-preview');
                 imagePreview.innerHTML = '';
@@ -1468,10 +1614,24 @@
                     imagePreview.appendChild(imgElement);
                 }
                 
-                // Show/hide delete button based on login status
+                // Show/hide admin controls
                 const deleteSection = document.querySelector('.delete-section');
-                if (deleteSection) {
-                    deleteSection.style.display = isLoggedIn ? 'block' : 'none';
+                const editButton = document.querySelector('.edit-button');
+                const addButton = document.querySelector('.add-button');
+                const saveButton = document.querySelector('.save-button');
+                
+                if (isLoggedIn) {
+                    // Admin view - show all controls
+                    if (deleteSection) deleteSection.style.display = 'block';
+                    if (editButton) editButton.style.display = 'inline-block';
+                    if (addButton) addButton.style.display = 'flex';
+                    if (saveButton) saveButton.style.display = 'block';
+                } else {
+                    // Public view - hide admin controls but keep close button
+                    if (deleteSection) deleteSection.style.display = 'none';
+                    if (editButton) editButton.style.display = 'none';
+                    if (addButton) addButton.style.display = 'none';
+                    if (saveButton) saveButton.style.display = 'none';
                 }
                 
                 document.getElementById('detailed-view').classList.remove('hidden');
@@ -1481,12 +1641,13 @@
         }
 
         async function saveDetailedView() {
-            const id = parseInt(document.querySelector('[data-id]').getAttribute('data-id'));
+            const id = itemToDelete;
             try {
                 const { data: updatedEntry, error } = await supabase
                     .from('media')
                     .update({
-                        notes: document.getElementById('notes-editor').value
+                        notes: document.getElementById('notes-editor').value,
+                        private_notes: document.getElementById('private-notes').checked
                     })
                     .eq('id', id)
                     .select('*')
@@ -1494,8 +1655,8 @@
 
                 if (error) throw error;
 
-                alert('Changes saved successfully!');
-                loadAllMedia();
+                await loadAllMedia();
+                closeDetailedView(); // Auto-close after saving
             } catch (error) {
                 alert('Failed to save changes: ' + error.message);
             }
@@ -1541,7 +1702,7 @@
         }
 
         async function saveReviewEdit() {
-            const id = parseInt(document.querySelector('[data-id]').getAttribute('data-id'));
+            const id = itemToDelete;
             const newReview = document.getElementById('review-editor').value;
             const newRating = parseInt(document.getElementById('rating-editor').value);
             
@@ -1738,6 +1899,89 @@
             }
         }
 
+        // Add these functions for completion status
+        async function toggleCompletionStatus() {
+            const checkbox = document.getElementById('completion-status');
+            const dateInput = document.getElementById('completion-date');
+            
+            if (checkbox.checked) {
+                dateInput.style.display = 'inline-block';
+                dateInput.value = new Date().toISOString().split('T')[0];
+            } else {
+                dateInput.style.display = 'none';
+                dateInput.value = '';
+            }
+            
+            await saveCompletionStatus();
+        }
+
+        async function saveCompletionStatus() {
+            const id = itemToDelete;
+            const completed = document.getElementById('completion-status').checked;
+            const completionDate = document.getElementById('completion-date').value;
+
+            try {
+                const { error } = await supabase
+                    .from('media')
+                    .update({
+                        completed: completed,
+                        completion_date: completed ? completionDate : null
+                    })
+                    .eq('id', id);
+
+                if (error) throw error;
+                
+                await loadAllMedia();
+                closeDetailedView(); // Auto-close after saving
+            } catch (error) {
+                alert('Failed to update completion status: ' + error.message);
+            }
+        }
+
+        async function subscribeEmail() {
+            const emailInput = document.getElementById('subscriber-email');
+            const email = emailInput.value.trim();
+            const messageDiv = document.getElementById('subscription-message');
+
+            // Basic email validation
+            if (!email || !email.includes('@') || !email.includes('.')) {
+                messageDiv.textContent = 'Please enter a valid email address';
+                messageDiv.className = 'subscription-message error';
+                return;
+            }
+
+            try {
+                const { data, error } = await supabase
+                    .from('subscribers')
+                    .insert([{ email }]);
+
+                if (error) {
+                    if (error.code === '23505') { // Unique violation
+                        messageDiv.textContent = 'This email is already subscribed!';
+                    } else {
+                        messageDiv.textContent = 'Failed to subscribe. Please try again.';
+                    }
+                    messageDiv.className = 'subscription-message error';
+                    return;
+                }
+
+                // Success
+                messageDiv.textContent = 'Successfully subscribed to monthly digest! 🎉';
+                messageDiv.className = 'subscription-message success';
+                emailInput.value = ''; // Clear input
+            } catch (error) {
+                messageDiv.textContent = 'An error occurred. Please try again.';
+                messageDiv.className = 'subscription-message error';
+            }
+        }
+
+        // Add keypress event listener for email input
+        document.getElementById('subscriber-email').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                subscribeEmail();
+            }
+        });
+
         // Initialize Supabase and app
         document.addEventListener('DOMContentLoaded', async function() {
             // Initialize Supabase
@@ -1773,6 +2017,9 @@
             window.showDeleteConfirmation = showDeleteConfirmation;
             window.cancelDelete = cancelDelete;
             window.confirmDelete = confirmDelete;
+            window.toggleCompletionStatus = toggleCompletionStatus;
+            window.saveCompletionStatus = saveCompletionStatus;
+            window.subscribeEmail = subscribeEmail;
         });
     </script>
 </body>
