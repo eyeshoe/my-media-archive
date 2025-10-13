@@ -1,6 +1,5 @@
 let musicData = { entries: [] };
 let currentMonth = new Date();
-let isAdminMode = false;
 
 async function loadData() {
     // First load from localStorage
@@ -249,21 +248,6 @@ function showDayEntries(date) {
     });
 }
 
-function toggleAdminMode() {
-    const password = prompt('Enter admin password:');
-    if (password === 'aishu123') { // Simple password - you can change this
-        isAdminMode = !isAdminMode;
-        document.body.classList.toggle('admin-mode', isAdminMode);
-        
-        if (isAdminMode) {
-            showSuccessMessage('Admin mode enabled!');
-        } else {
-            showSuccessMessage('Admin mode disabled');
-        }
-    } else if (password !== null) {
-        alert('Incorrect password');
-    }
-}
 
 // Load data from localStorage on startup
 function loadFromStorage() {
@@ -304,9 +288,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     
-    // Add keyboard shortcut to open form (Ctrl/Cmd + N) - only in admin mode
+    // Add keyboard shortcut to open form (Ctrl/Cmd + N)
     document.addEventListener('keydown', (e) => {
-        if ((e.ctrlKey || e.metaKey) && e.key === 'n' && isAdminMode) {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
             e.preventDefault();
             showAddForm();
         }
