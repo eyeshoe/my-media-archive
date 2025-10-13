@@ -239,7 +239,6 @@ function showDayEntries(date) {
     modal.innerHTML = `
         <div class="modal-content">
             <span class="close" onclick="this.parentElement.parentElement.remove()">&times;</span>
-            <h2>${formatDate(date)}</h2>
             ${entriesHtml}
         </div>
     `;
