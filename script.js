@@ -3,14 +3,25 @@ let currentMonth = new Date();
 let isAdminMode = false;
 
 async function loadData() {
-    try {
-        const musicResponse = await fetch('data/music.json');
-        musicData = await musicResponse.json();
-        renderCalendar();
-    } catch (error) {
-        console.error('Error loading data:', error);
-        renderCalendar(); // Still render even if no data
+    // First load from localStorage
+    loadFromStorage();
+    
+    // Only load from JSON file if localStorage is empty
+    if (!musicData.entries || musicData.entries.length === 0) {
+        try {
+            const musicResponse = await fetch('data/music.json');
+            const jsonData = await musicResponse.json();
+            if (jsonData.entries && jsonData.entries.length > 0) {
+                musicData = jsonData;
+                // Save to localStorage for future use
+                localStorage.setItem('aishusArchive', JSON.stringify(musicData));
+            }
+        } catch (error) {
+            console.error('Error loading data:', error);
+        }
     }
+    
+    renderCalendar();
 }
 
 function renderEntries() {
@@ -279,8 +290,7 @@ function exportData() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Load from localStorage first, then from JSON file
-    loadFromStorage();
+    // Load data (prioritizes localStorage over JSON file)
     loadData();
     
     // Set up form submission
