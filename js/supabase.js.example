@@ -1,9 +1,0 @@
-import { createClient } from '@supabase/supabase-js';
-
-// Initialize Supabase client
-const supabaseUrl = 'https://your-project.supabase.co';
-const supabaseKey = 'your-anon-key';
-const supabase = createClient(supabaseUrl, supabaseKey);
-
-// Export the operations from supabase.js
-export { mediaOperations, authOperations, storageOperations } from './supabase.js'; 
