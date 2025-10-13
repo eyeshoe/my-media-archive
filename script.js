@@ -56,7 +56,8 @@ function renderEntries() {
 }
 
 function formatDate(dateString) {
-    const date = new Date(dateString);
+    const [year, month, day] = dateString.split('-');
+    const date = new Date(year, month - 1, day);
     return date.toLocaleDateString('en-US', {
         weekday: 'long',
         year: 'numeric',
