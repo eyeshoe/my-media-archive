@@ -13,18 +13,36 @@ Open `index.html` in your browser to view your archive.
 ```bash
 node add-entry.js
 ```
-Follow the prompts to add a new album or book entry.
+Follow the prompts to add a new album entry. The script will ask for:
+- Date (YYYY-MM-DD format, defaults to today)
+- Album name
+- Artist name  
+- Album cover path (optional)
+- Rating (1-5)
+- Review (optional)
 
 #### Method 2: Manual JSON Edit
-Edit `data/music.json` or `data/books.json` directly:
+Edit `data/music.json` directly. Add your entry to the "entries" array:
 ```json
 {
-  "date": "2024-01-20",
+  "date": "2025-10-14",
   "album": "Album Name",
   "artist": "Artist Name",
-  "review": "Your thoughts here",
-  "rating": 5
+  "cover": "images/album-covers/filename.jpg",
+  "rating": 5,
+  "review": "Your thoughts here"
 }
+```
+
+#### Quick Command Example
+To add an entry manually via command line:
+```bash
+# Edit the JSON file directly
+nano data/music.json
+# or
+vim data/music.json
+# or
+code data/music.json
 ```
 
 ### Deploying to GitHub Pages
