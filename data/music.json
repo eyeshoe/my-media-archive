@@ -13,7 +13,14 @@
       "album": "Pink Moon",
       "artist": "Nick Drake",
       "rating": 5,
-      "review": "Beautiful, beautiful, beautiful. Makes me want to get way better at the guitar.  I think I will listen to this album forever and show my children some day. Favorite song: Place to Be."
+      "review": "Beautiful, beautiful, beautiful. Makes me want to get way better at the guitar.  I think I will listen to this album forever and show my children someday. Favorite song: Place to Be."
+    },
+    {
+      "date": "2025-10-15",
+      "album": "Rat Saw God",
+      "artist": "Wednesday",
+      "rating": 4,
+      "review": "This album feels like going back to my hometown and finding beauty in a place that is otherwise decrepit and awful. Or not really beauty, but accepting it for what it is. Favorite song is Quarry."
     }
   ]
 }
