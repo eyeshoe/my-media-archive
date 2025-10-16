@@ -2,24 +2,17 @@ let musicData = { entries: [] };
 let currentMonth = new Date();
 
 async function loadData() {
-    // First load from localStorage
-    loadFromStorage();
-    
-    // Only load from JSON file if localStorage is empty
-    if (!musicData.entries || musicData.entries.length === 0) {
-        try {
-            const musicResponse = await fetch('data/music.json');
-            const jsonData = await musicResponse.json();
-            if (jsonData.entries && jsonData.entries.length > 0) {
-                musicData = jsonData;
-                // Save to localStorage for future use
-                localStorage.setItem('aishusArchive', JSON.stringify(musicData));
-            }
-        } catch (error) {
-            console.error('Error loading data:', error);
+    // Always load from JSON file
+    try {
+        const musicResponse = await fetch('data/music.json');
+        const jsonData = await musicResponse.json();
+        if (jsonData.entries && jsonData.entries.length > 0) {
+            musicData = jsonData;
         }
+    } catch (error) {
+        console.error('Error loading data:', error);
     }
-    
+
     renderCalendar();
 }
 
@@ -84,7 +77,7 @@ function hideAddForm() {
 
 async function handleSubmit(e) {
     e.preventDefault();
-    
+
     const entry = {
         album: document.getElementById('album').value.trim(),
         artist: document.getElementById('artist').value.trim(),
@@ -92,18 +85,15 @@ async function handleSubmit(e) {
         rating: parseInt(document.getElementById('rating').value),
         review: document.getElementById('review').value.trim() || null
     };
-    
+
     // Add to data
     musicData.entries.push(entry);
     musicData.entries.sort((a, b) => new Date(a.date) - new Date(b.date));
-    
-    // Save to localStorage for persistence
-    localStorage.setItem('aishusArchive', JSON.stringify(musicData));
-    
+
     // Update display
     renderCalendar();
     hideAddForm();
-    
+
     // Show success message
     showSuccessMessage(`Added "${entry.album}" by ${entry.artist}!`);
 }
@@ -249,17 +239,6 @@ function showDayEntries(date) {
 }
 
 
-// Load data from localStorage on startup
-function loadFromStorage() {
-    const stored = localStorage.getItem('aishusArchive');
-    if (stored) {
-        try {
-            musicData = JSON.parse(stored);
-        } catch (error) {
-            console.error('Error loading from storage:', error);
-        }
-    }
-}
 
 // Export function to download JSON
 function exportData() {
@@ -274,20 +253,20 @@ function exportData() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Load data (prioritizes localStorage over JSON file)
+    // Load data from JSON file
     loadData();
-    
+
     // Set up form submission
     document.getElementById('add-form').addEventListener('submit', handleSubmit);
-    
+
     // Set up modal click outside to close
     document.getElementById('add-modal').addEventListener('click', (e) => {
         if (e.target.id === 'add-modal') {
             hideAddForm();
         }
     });
-    
-    
+
+
     // Add keyboard shortcut to open form (Ctrl/Cmd + N)
     document.addEventListener('keydown', (e) => {
         if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
