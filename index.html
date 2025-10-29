@@ -3,45 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>aishu's archive</title>
+    <title>aishu's corner of the internet</title>
     <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-    <div class="container">
-        <header>
-            <h1>aishu's archive</h1>
+<body class="home-body">
+    <div class="home-container">
+        <!-- Header Section -->
+        <header class="home-header">
+            <pre style="font-family: monospace; font-size: 24px; line-height: 1.2; margin: 0; overflow-x: auto; color: #000; display: flex; align-items: center; justify-content: center; width: 100%;">+-+-+-+-+-+-+-+ +-+-+-+-+-+-+-+
+|a|i|s|h|u|'|s| |a|r|c|h|i|v|e|
++-+-+-+-+-+-+-+ +-+-+-+-+-+-+-+</pre>
         </header>
-        
-        <div class="calendar-container" id="calendar-container">
-            <!-- Calendar will be loaded here -->
-        </div>
-    </div>
-    
-    <!-- Simple Add Form Modal -->
-    <div id="add-modal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="hideAddForm()">&times;</span>
-            <h2>Add New Album</h2>
-            <form id="add-form">
-                <input type="text" id="album" placeholder="Album name" required>
-                <input type="text" id="artist" placeholder="Artist name" required>
-                <input type="date" id="date" value="">
-                <select id="rating">
-                    <option value="1">★</option>
-                    <option value="2">★★</option>
-                    <option value="3" selected>★★★</option>
-                    <option value="4">★★★★</option>
-                    <option value="5">★★★★★</option>
-                </select>
-                <textarea id="review" placeholder="Your thoughts on this album..."></textarea>
-                <div class="form-buttons">
-                    <button type="button" onclick="hideAddForm()">Cancel</button>
-                    <button type="submit">Add Album</button>
+
+        <!-- Main Content Grid -->
+        <div class="home-grid">
+            <!-- About/Intro Box -->
+            <div class="home-box intro-box">
+                <h2>welcome!!!</h2>
+                <p>this is MY blog where I keep track of things I like and what I think. Have a look around (on desktop please!)</p>
+                <div class="decorative-stars"></div>
+            </div>
+
+            <!-- Monthly Blog -->
+            <a href="blog.html" class="home-box clickable-box blog-box">
+                <h2>monthly blog</h2>
+                <p>thoughts on media & music</p>
+            </a>
+
+            <!-- Albums Calendar -->
+            <a href="albums.html" class="home-box clickable-box albums-box">
+                <h2>albums calendar</h2>
+                <p>an album a day</p>
+            </a>
+
+            <!-- Favorites -->
+            <a href="favorites.html" class="home-box clickable-box favorites-box">
+                <h2>best things ever</h2>
+                <p>a collection of some of my favorite things</p>
+            </a>
+
+            <!-- Decorative Box -->
+            <div class="home-box decor-box">
+                <div class="ascii-art">
+                    ♫♪.ılılıll|̲̅̅●̲̅̅|̲̅̅=̲̅̅|̲̅̅●̲̅̅|llılılı.♫♪
                 </div>
-            </form>
+            </div>
+
+            <!-- Pictures -->
+            <a href="pictures.html" class="home-box clickable-box pictures-box">
+                <h2>pictures</h2>
+                <p>I refuse to pay for photo storage</p>
+            </a>
+
+            <!-- Newsletter Signup -->
+            <div class="home-box newsletter-box">
+                <h2>newsletter</h2>
+                <p>get my monthly blog in your inbox!</p>
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLSeGUT9fPRHV50-MIK3XvzGrCYlYG_MqXXEtRJNRQi_H7IforQ/viewform" target="_blank" style="color: #ff1493; text-decoration: underline; font-weight: bold;">subscribe</a>
+            </div>
+
+            <!-- Fun Decorative Box -->
+            <div class="home-box decor-box">
+                <div class="ascii-art">
+                    ┏(･o･)┛<br>
+                    ┗(･o･)┓
+                </div>
+            </div>
         </div>
+
+        <!-- Footer -->
+        <footer class="home-footer">
+            <img src="images/bat-divider.gif" alt="decorative bat divider" style="width: 100%; max-width: 500px; margin: 0 auto 20px auto; display: block;">
+            <p>made with love by aishu | est. 2025</p>
+        </footer>
     </div>
-    
-    <script src="script.js"></script>
+
+    <script src="home.js"></script>
 </body>
 </html>

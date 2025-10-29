@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>albums calendar | aishu's corner</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .calendar-month-title {
+            color: #ff99cc !important;
+        }
+        .calendar-day.has-entry {
+            background-color: #ff99cc !important;
+        }
+        .album-rating {
+            color: #ff99cc !important;
+        }
+        .album-title {
+            color: #ff99cc !important;
+        }
+        .calendar-nav button:hover {
+            background-color: #ffe6f0 !important;
+        }
+        .add-btn {
+            background-color: #ff99cc !important;
+            color: white !important;
+        }
+        .add-btn:hover {
+            background-color: #ffb3d1 !important;
+        }
+        .form-buttons button[type="submit"] {
+            background-color: #ff99cc !important;
+            color: white !important;
+        }
+        .form-buttons button:hover {
+            background-color: #ffb3d1 !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="page-header-content">
+                <a href="index.html" class="back-link">← home</a>
+                <h1>albums calendar</h1>
+            </div>
+        </header>
+
+        <div class="calendar-container" id="calendar-container">
+            <!-- Calendar will be loaded here -->
+        </div>
+    </div>
+
+    <!-- Add Entry Modal -->
+    <div id="add-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="hideAddForm()">&times;</span>
+            <h2>Add New Album</h2>
+            <form id="add-form">
+                <input type="text" id="album" placeholder="Album name" required>
+                <input type="text" id="artist" placeholder="Artist name" required>
+                <input type="date" id="date" value="">
+                <select id="rating">
+                    <option value="1">★</option>
+                    <option value="2">★★</option>
+                    <option value="3" selected>★★★</option>
+                    <option value="4">★★★★</option>
+                    <option value="5">★★★★★</option>
+                </select>
+                <textarea id="review" placeholder="Your thoughts on this album..."></textarea>
+                <div class="form-buttons">
+                    <button type="button" onclick="hideAddForm()">Cancel</button>
+                    <button type="submit">Add Album</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

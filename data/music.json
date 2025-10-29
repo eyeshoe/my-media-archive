@@ -28,6 +28,90 @@
       "artist": "The Velvet Underground & Nico",
       "rating": 4,
       "review": "Warhol banana album. I listened to this while eating grocery sushi with the California sun on my back, which was quite beautiful. Incredible listen. Favorite song is There She Goes Again."
+    },
+    {
+      "date": "2025-10-17",
+      "album": "Bleeds",
+      "artist": "Wednesday",
+      "rating": 5,
+      "review": "I have listened so much already. Quite perfect and I am seeing live today. Favorite song is Pick up That Knife."
+    },
+    {
+      "date": "2025-10-18",
+      "album": "Crooked Rain, Crooked Rain",
+      "artist": "Pavement",
+      "rating": 5,
+      "review": "I WISH I WAS STEPHEN MALKMUS. Favorite song: Silence Kid."
+    },
+    {
+      "date": "2025-10-19",
+      "album": "Manning Fireworks",
+      "artist": "MJ Lenderman",
+      "rating": 4,
+      "review": "I like when an album is funny and makes me feel like someone I will never be. Favorite song: Rudolph."
+    },
+    {
+      "date": "2025-10-20",
+      "album": "Heavy Metal",
+      "artist": "Cameron Winter",
+      "rating": 5,
+      "review": "I listen to this album all the time—I think it's going to become one of my favorites ever soon. Favorite song is $0."
+    },
+    {
+      "date": "2025-10-21",
+      "album": "Zach Bryan",
+      "artist": "Zach Bryan",
+      "rating": 3,
+      "review": "The songs kind of all sound the same, but there are some bangers. Good songs to learn for beginner guitar. Favorite song is smaller acts."
+    },
+    {
+      "date": "2025-10-22",
+      "album": "Going Through It",
+      "artist": "Eliza McLamb",
+      "rating": 4,
+      "review": "This used to hit a lot harder when I was far sadder, but still great. It's like she was in my room. Favorite song is 16 even though I can't listen to it."
+    },
+    {
+      "date": "2025-10-23",
+      "album": "Motocycle.jpeg",
+      "artist": "Slaughter Beach Dog",
+      "rating": 5,
+      "review": "Not really an album but so good. Incredible songwriting it just blows my mind. Favorite song is Your Cat."
+    },
+    {
+      "date": "2025-10-24",
+      "album": "Sports",
+      "artist": "Modern Baseball",
+      "rating": 4,
+      "review": "I MISS MODERN BASEBALL. Favorite song is The Weekend."
+    },
+    {
+      "date": "2025-10-25",
+      "album": "Boat Songs",
+      "artist": "MJ Lenderman",
+      "rating": 3.5,
+      "review": "Very fun and silly. Favorite song Tastes Just Like It Costs."
+    },
+    {
+      "date": "2025-10-26",
+      "album": "Harlem River Blues",
+      "artist": "Justin Townes Earle",
+      "rating": 5,
+      "review": "Incredibly underrated album, I wish more people talked about it. Other than Harlem River Blues my favorite song is One More Night in Brooklyn."
+    },
+    {
+      "date": "2025-10-27",
+      "album": "The Great American Bar Scene",
+      "artist": "Zach Bryan",
+      "rating": 4,
+      "review": "Zach Bryan is an incredible songwriter, sometimes a bit overwrought. Favorite song is Like Ida."
+    },
+    {
+      "date": "2025-10-28",
+      "album": "Getting Killed",
+      "artist": "Geese",
+      "rating": 5,
+      "review": "Wonderful and weird. Makes me cry, makes me laugh. Everything I ever dreamed and more. Favorite song right now is Bow Down."
     }
   ]
 }
